@@ -1,22 +1,9 @@
 {
-  "name": "Ask Once",
+  "name": "Ask Once \u2014 Gremlin",
   "short_name": "Ask Once",
   "start_url": "./",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#1B2420",
-  "theme_color": "#1B2420",
-  "description": "One useful answer, even offline.",
-  "icons": [
-    {
-      "src": "icon-192.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "icon-512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml"
-    }
-  ]
+  "background_color": "#07140f",
+  "theme_color": "#0d3b2e",
+  "description": "Offline-first local knowledge assistant."
 }

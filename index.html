@@ -1,62 +1,71 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#1B2420"><meta name="description" content="ask once — one useful answer, even offline">
-<link rel="manifest" href="./manifest.webmanifest"><title>ask once</title>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d3b2e"><link rel="manifest" href="manifest.webmanifest">
+<title>Ask Once — Gremlin</title>
 <style>
-:root{--bg:#1B2420;--raised:#222E28;--ink:#F1EFE4;--dim:#B9C2B4;--line:#ffffff24;--amber:#E8A33D;--moss:#8FBF7F;--warn:#D9A441;--danger:#C1665A}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#2b3b32,#1B2420 50%);color:var(--ink);font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100svh;padding:18px 16px 48px}.wrap{max-width:600px;margin:auto}
-header{display:flex;justify-content:space-between;align-items:end;margin:5px 0 20px}.brand h1{font:italic 500 31px Georgia,serif;margin:0}.brand p{font-size:13px;color:var(--dim);margin:3px 0}.status{font-size:12px;color:var(--dim)}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--moss);margin-right:5px}.offline .dot{background:var(--danger)}
-.composer,.card,.install{background:#222E28f5;border:1px solid var(--line);border-radius:15px;box-shadow:0 12px 35px #0002}.composer{padding:12px}.composer textarea{width:100%;min-height:64px;resize:none;border:0;outline:0;background:transparent;color:var(--ink);font:16px/1.5 inherit}.composer textarea::placeholder{color:var(--dim)}
-.tools{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:8px}.left{display:flex;gap:7px}.icon{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--dim);cursor:pointer}.icon.active{color:var(--amber);border-color:var(--amber)}.ask{height:38px;padding:0 18px;border:0;border-radius:10px;background:var(--amber);font-weight:700;cursor:pointer}.ask:disabled{opacity:.45}
-.note{display:none;color:var(--warn);font-size:13px}.note.show{display:block}.loading{display:none;color:var(--dim);font-style:italic;font-size:14px;margin:17px 2px}.loading.show{display:block}
-.card{display:none;margin-top:18px;padding:19px}.card.show{display:block}.q{font-size:12px;color:var(--dim);margin:0 0 10px}.answer{font-size:19px;line-height:1.52;margin:0 0 12px}.why{border:0;background:none;color:var(--moss);text-decoration:underline;padding:0;cursor:pointer}.whybody{display:none;color:var(--dim);font-size:14px;line-height:1.55;margin-top:9px}.whybody.show{display:block}.next{margin-top:15px;padding:11px 12px;background:#e8a33d18;border:1px solid #e8a33d4d;border-radius:10px;font-size:14px}.next b{display:block;color:var(--amber);font-size:11px;margin-bottom:3px}.confidence{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:12px;margin-top:12px}.confidence i{width:7px;height:7px;border-radius:50%;background:var(--moss)}.confidence.medium i{background:var(--warn)}.confidence.low i{background:var(--danger)}
-.history{margin-top:34px}.history h2{font-size:13px;color:var(--dim)}.history-item{border-top:1px solid var(--line);padding:12px 0;cursor:pointer}.history-item p{margin:0;font-size:14px}.history-item span{font-size:11px;color:var(--dim)}.empty{color:var(--dim);font-size:13px;font-style:italic}.clear{display:none;background:none;border:0;color:var(--dim);text-decoration:underline;font-size:12px;cursor:pointer}.install{display:none;margin-top:16px;padding:10px 12px;justify-content:space-between;align-items:center;font-size:13px}.install.show{display:flex}.install button{border:0;background:var(--amber);padding:7px 10px;border-radius:8px;font-weight:700}
-.thumb-row{display:flex;gap:8px;margin-top:8px}.thumb{position:relative;width:54px;height:54px;overflow:hidden;border:1px solid var(--line);border-radius:8px}.thumb img{width:100%;height:100%;object-fit:cover}.thumb button{position:absolute;right:2px;top:2px;border:0;border-radius:50%;background:#000a;color:#fff}.privacy{color:var(--dim);font-size:12px;line-height:1.5;margin-top:12px}
-</style></head><body><main class="wrap">
-<header><div class="brand"><h1>ask once</h1><p>the gremlin's got you — even offline</p></div><div class="status" id="status"><span class="dot"></span><span id="st">online</span></div></header>
-<div class="composer"><textarea id="input" placeholder="what's going on?" rows="2"></textarea><div id="thumbs" class="thumb-row"></div><div class="tools"><div class="left"><button class="icon" id="mic">🎤</button><button class="icon" id="photo">📷</button><input id="files" type="file" accept="image/*" capture="environment" multiple hidden></div><button class="ask" id="ask">ask</button></div></div>
-<p id="offline" class="note">no signal — offline answer mode is active. common questions, planning, writing, calculations and reasoning still work.</p><p id="loading" class="loading">the gremlin is thinking…</p>
-<section id="card" class="card"><p id="cq" class="q"></p><p id="ans" class="answer"></p><button id="why" class="why">why?</button><p id="whybody" class="whybody"></p><div class="next"><b>next step</b><span id="next"></span></div><div id="confidence" class="confidence"><i></i><span id="ct"></span></div></section>
-<div id="install" class="install"><span>install ask once for quick access</span><button id="installBtn">install</button></div>
-<section class="history"><h2>earlier</h2><div id="history"></div><button id="clear" class="clear">clear history</button></section>
-<p class="privacy">Offline mode keeps questions and history in this browser. Photos are not uploaded by this version. Live/current facts require a connection.</p>
+:root{--bg:#07140f;--card:#10271f;--line:#284a3c;--txt:#eef8f3;--muted:#aac1b7;--green:#59d38d;--red:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#06110d,#0b2118);color:var(--txt);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:760px;margin:auto;padding:20px 15px 45px}h1{margin:0;font-size:30px}.sub{color:var(--muted);margin-bottom:15px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.status{border:1px solid var(--line);border-radius:99px;padding:7px 10px;font-size:13px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-right:6px}.offline .dot{background:var(--red)}
+.card{margin-top:14px;padding:15px;border:1px solid var(--line);border-radius:18px;background:#10271ff2}
+textarea{width:100%;min-height:125px;background:#081912;color:var(--txt);border:1px solid var(--line);border-radius:13px;padding:13px;font:inherit}
+.row{display:flex;gap:8px;margin-top:10px}.btn{border:1px solid var(--line);background:#14362a;color:var(--txt);padding:10px 13px;border-radius:12px}.ask{flex:1;background:var(--green);color:#062016;border:0;font-weight:800}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.answer{font-size:18px;line-height:1.55;margin-top:8px}.meta{border-top:1px solid var(--line);margin-top:14px;padding-top:11px;color:var(--muted);font-size:13px}
+.item{padding:10px;border:1px solid var(--line);border-radius:12px;margin-top:8px}.item b{display:block}.muted{color:var(--muted);line-height:1.45}
+</style></head><body><main>
+<div class="top"><div><h1>ask once</h1><div class="sub">the gremlin's got you</div></div><div id="status" class="status"><span class="dot"></span><span id="st">Checking…</span></div></div>
+
+<section class="card"><textarea id="q" placeholder="Ask the Gremlin anything…"></textarea>
+<div class="row"><button class="btn" id="mic">🎙️</button><button class="btn" id="photo">📷</button><button class="btn ask" id="ask">ASK</button></div></section>
+
+<section class="card"><div class="label">Gremlin</div><div id="ans" class="answer">Ready. Ask me a question.</div><div id="meta" class="meta">Your questions are answered from the knowledge stored in this app.</div></section>
+
+<section class="card"><div class="label">How it works</div><div class="muted">The Gremlin does not call Claude or require an API key. It searches its built-in knowledge and your learned entries. Online and offline use the same answer system.</div></section>
+
+<section class="card"><div class="label">Recent</div><div id="hist"></div></section>
 </main>
 <script>
-const $=id=>document.getElementById(id),KEY="ask-once-history-v3";let imgs=[],whyOpen=false,deferred=null;
-function load(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch{return[]}}function save(x){localStorage.setItem(KEY,JSON.stringify(x.slice(0,60)))}function esc(x){let d=document.createElement("div");d.textContent=x||"";return d.innerHTML}
-function net(){let on=navigator.onLine;$("status").classList.toggle("offline",!on);$("st").textContent=on?"online":"offline";$("offline").classList.toggle("show",!on)}
-addEventListener("online",net);addEventListener("offline",net);net();
-function history(){let a=load(),b=$("history");b.innerHTML="";$("clear").style.display=a.length?"inline-block":"none";if(!a.length){b.innerHTML='<p class="empty">nothing yet — ask something above.</p>';return}a.forEach(x=>{let d=document.createElement("div");d.className="history-item";d.innerHTML=`<p>${esc(x.q)}</p><span>${new Date(x.ts).toLocaleString()}</span>`;d.onclick=()=>show(x);b.appendChild(d)})}
-$("clear").onclick=()=>{if(confirm("clear all saved answers?")){save([]);history()}}
-function show(x){whyOpen=false;$("cq").textContent=x.q;$("ans").textContent=x.answer;$("whybody").textContent=x.why;$("whybody").classList.remove("show");$("why").textContent="why?";$("next").textContent=x.next_step;$("confidence").className="confidence "+x.confidence;$("ct").textContent="confidence: "+x.confidence;$("card").classList.add("show")}
-$("why").onclick=()=>{whyOpen=!whyOpen;$("whybody").classList.toggle("show",whyOpen);$("why").textContent=whyOpen?"hide":"why?"};
-$("photo").onclick=()=>$("files").click();$("files").onchange=e=>{[...e.target.files].slice(0,4).forEach(f=>{let r=new FileReader();r.onload=()=>{imgs.push({url:r.result});thumbs()};r.readAsDataURL(f)});e.target.value=""};
-function thumbs(){let b=$("thumbs");b.innerHTML="";imgs.forEach((x,i)=>{let d=document.createElement("div");d.className="thumb";d.innerHTML=`<img src="${x.url}"><button>×</button>`;d.querySelector("button").onclick=()=>{imgs.splice(i,1);thumbs()};b.appendChild(d)})}
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$("mic").disabled=true;$("mic").style.opacity=.35}else{let r=new SR(),on=false;r.continuous=false;r.interimResults=false;r.lang=navigator.language||"en-US";r.onresult=e=>$("input").value+=($("input").value?" ":"")+e.results[0][0].transcript;r.onend=()=>{on=false;$("mic").classList.remove("active")};$("mic").onclick=()=>{if(on){r.stop();return}try{r.start();on=true;$("mic").classList.add("active")}catch{}}}
-const KB=[
-["weather","i can't see live weather while offline, and i won't invent it.","live weather changes constantly.","when online, ask for the current forecast for your city.","high"],
-["email","yes — paste the rough message and i'll help turn it into something clear and natural.","writing does not require live information.","paste the message and say who it is for and what tone you want.","high"],
-["message","yes — paste the rough message and i'll help turn it into something clear and natural.","writing does not require live information.","paste the message and say who it is for and what tone you want.","high"],
-["write","yes — give me the messy version. i'll help structure it.","the offline engine can work on text without a network.","paste the draft and say what you want changed.","high"],
-["plan","start with destination or goal, dates, budget, and priorities. i'll turn those constraints into a practical plan.","planning can be done locally when the needed facts are already known.","send the goal, dates, budget and priorities.","high"],
-["travel","start with destination or goal, dates, budget, and priorities. i'll turn those constraints into a practical plan.","live prices and opening hours require a connection.","send destination, dates, budget and priorities.","high"],
-["decision","make the decision smaller: list the options, your top three priorities, and the downside you most want to avoid.","explicit trade-offs are more useful than pretending there is one universally best choice.","send the options and your top three priorities.","high"],
-["money","i can help with budgeting and arithmetic, but i won't invent live prices or financial facts.","financial facts can change and may be high-stakes.","send the amounts, currency and goal.","high"],
-["legal","i can explain general concepts and organize facts, but offline mode should not pretend to know current law for your jurisdiction.","legal rules vary by place and change over time.","tell me the jurisdiction and situation; for urgent matters contact a qualified local professional.","high"],
-["medical","i can help organize general information, but i won't diagnose you offline. severe or sudden symptoms need appropriate medical care.","health questions can be high-stakes and current clinical information matters.","describe the symptom and duration; seek care for urgent warning signs.","high"],
-["relationship","tell me what happened and what you want next. i'll help separate facts, feelings, assumptions and the conversation you need.","relationship problems become clearer when observable facts are separated from guesses about another person's intentions.","tell me what happened and the outcome you want.","high"],
-["computer","yep. paste the exact error or code and tell me what you expected to happen.","debugging pasted code can be done offline; live documentation cannot.","paste the smallest failing example and exact error.","high"],
-["python","yep. paste the exact error or code and tell me what you expected to happen.","debugging pasted code can be done offline; live documentation cannot.","paste the smallest failing example and exact error.","high"],
-["html","yep. paste the exact error or code and tell me what you expected to happen.","debugging pasted code can be done offline; live documentation cannot.","paste the smallest failing example and exact error.","high"],
-["anxious","you don't have to solve the whole thing at once. tell me the part that feels heaviest and we'll take one piece at a time.","this is supportive guidance, not a diagnosis.","name the single thing that feels most urgent.","high"],
-["worried","you don't have to solve the whole thing at once. tell me the part that feels heaviest and we'll take one piece at a time.","this is supportive guidance, not a diagnosis.","name the single thing that feels most urgent.","high"]
+const BASE=[
+["what is photosynthesis","Photosynthesis is the process plants and many algae use to turn light energy into chemical energy. Using carbon dioxide and water, they produce sugars and release oxygen."],
+["what is gravity","Gravity is the attraction between objects with mass. Near Earth, it causes objects to accelerate toward the ground and keeps the Moon and satellites in orbit."],
+["what is an atom","An atom is the basic unit of an element. It has a nucleus containing protons and usually neutrons, with electrons occupying regions around the nucleus."],
+["how does the internet work","The internet is a network of networks. Devices communicate using agreed protocols such as IP and TCP, while DNS translates human-friendly domain names into network addresses."],
+["what is a pwa","A Progressive Web App is a web application that can provide app-like installation and offline behavior using technologies such as a web manifest and service workers."],
+["what is html","HTML is the markup language used to structure content on web pages. CSS controls presentation and JavaScript adds behavior."],
+["what is javascript","JavaScript is a programming language widely used to add interactive behavior to web pages and to build applications outside the browser."],
+["what is python","Python is a general-purpose programming language known for readable syntax and a large ecosystem of libraries."],
+["what is machine learning","Machine learning is a set of methods in which computers learn patterns from data to make predictions or decisions without being explicitly programmed with every rule."],
+["what is ai","Artificial intelligence is a broad field concerned with systems that perform tasks associated with abilities such as perception, reasoning, language processing, planning, and learning."],
+["how to write an email","A useful email normally states the purpose early, gives the necessary context, makes the requested action clear, and ends with an appropriate sign-off."],
+["how to apologize","A good apology identifies what happened, acknowledges its impact, avoids excuses, and says what you will do differently."],
+["how to make a budget","List reliable income, fixed expenses, variable expenses, debts and savings goals. Give every major amount a category, then compare total spending with income."],
+["what is a service worker","A service worker is a browser worker that can intercept requests and use the Cache API to make parts of a web app available offline."],
+["what is offline pwa","An offline-capable PWA stores its application resources locally, commonly through a service worker and cache, so the interface can continue working without a network connection."]
 ];
-function math(q){let s=q.toLowerCase().replace(/,/g,"").replace(/\bplus\b/g,"+").replace(/\bminus\b/g,"-").replace(/\btimes\b/g,"*").replace(/\bdivided by\b/g,"/");if(!/^[0-9+\-*/().%\s]+$/.test(s))return null;try{let v=Function('"use strict";return ('+s.replace(/%/g,"/100")+')')();return Number.isFinite(v)?{answer:"the answer is "+v+".",why:"i evaluated the arithmetic you gave me; no live data was needed.",next_step:"send another expression if you want me to check it.",confidence:"high"}:null}catch{return null}}
-function offline(q,photo){let l=q.toLowerCase().trim();if(photo&&!q)return{answer:"i can see that a photo was attached, but this offline build does not contain a vision model, so i won't pretend i can inspect it.",why:"A photo needs an image-capable model for reliable analysis.","next_step":"describe what you want to know about the photo, or reconnect for an online vision model.",confidence:"high"};let m=math(l);if(m)return m;for(let k of KB)if(l.includes(k[0]))return{answer:k[1],why:k[2],next_step:k[3],confidence:k[4]};if(!l)return{answer:"give me the question — it doesn't need to be neat.",why:"the offline engine needs at least a little context before it can help.","next_step":"type the question in one sentence.","confidence":"high"};return{answer:"i can help you reason through that, but i'm offline and i don't want to make up facts.",why:"current facts, specialist knowledge and live research need a connection or a bundled AI model.","next_step":"give me the key facts, numbers, options or text and i'll work with those.","confidence":"medium"}}
-async function ask(){let q=$("input").value.trim();if(!q&&!imgs.length)return;$("loading").classList.add("show");$("ask").disabled=true;await new Promise(r=>setTimeout(r,160));let r=offline(q,imgs.length);let x={q:q||"(photo question)",...r,ts:Date.now()};let a=load();a.unshift(x);save(a);history();show(x);$("input").value="";imgs=[];thumbs();$("loading").classList.remove("show");$("ask").disabled=false}
-$("ask").onclick=ask;$("input").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask()}}
-addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;$("install").classList.add("show")});$("installBtn").onclick=async()=>{if(deferred){deferred.prompt();await deferred.userChoice;deferred=null;$("install").classList.remove("show")}}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});history();
+const learnedKey="askonce.learned.final", histKey="askonce.history.final";
+function toks(s){return s.toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(x=>x.length>2)}
+function allEntries(){let l=[];try{l=JSON.parse(localStorage.getItem(learnedKey)||"[]")}catch{}return BASE.map(x=>({q:x[0],a:x[1],base:true})).concat(l)}
+function similarity(q,e){let a=toks(q),b=toks(e.q),set=new Set(b),score=0;a.forEach(w=>{if(set.has(w))score+=3;else b.forEach(v=>{if(w.length>4&&v.length>4&&(w.includes(v)||v.includes(w)))score+=1})});return score}
+function best(q){return allEntries().map(e=>({...e,s:similarity(q,e)})).sort((a,b)=>b.s-a.s)[0]}
+function status(){let on=navigator.onLine;document.getElementById("status").classList.toggle("offline",!on);document.getElementById("st").textContent=on?"ONLINE":"OFFLINE"}window.addEventListener("online",status);window.addEventListener("offline",status);status();
+
+function ask(){
+ let q=document.getElementById("q").value.trim();if(!q)return;
+ let e=best(q), text;
+ if(e.s>=3) text=e.a;
+ else if(/^(hi|hello|hey|good morning|good evening)\b/i.test(q)) text="Hello. I'm here. Ask me something.";
+ else if(/\b(thank|thanks)\b/i.test(q)) text="You're welcome. Ask me another question whenever you like.";
+ else if(/\b(what|who|where|when|why|how)\b/i.test(q)) text="I don't have that topic in my stored knowledge yet. I can still help if you add some information for the Gremlin to learn.";
+ else text="Tell me a little more about what you need, and I'll search the knowledge I have stored.";
+ document.getElementById("ans").textContent=text;
+ document.getElementById("meta").textContent=(navigator.onLine?"🟢 Online":"🔴 Offline")+" · "+(e.s>=3?"Matched stored knowledge.":"No close stored match. No external AI is being called.");
+ let h=[];try{h=JSON.parse(localStorage.getItem(histKey)||"[]")}catch{}h.unshift({q,a:text});localStorage.setItem(histKey,JSON.stringify(h.slice(0,30)));render();
+}
+function render(){let h=[];try{h=JSON.parse(localStorage.getItem(histKey)||"[]")}catch{};document.getElementById("hist").innerHTML=h.slice(0,8).map(x=>`<div class="item"><b>${esc(x.q)}</b>${esc(x.a)}</div>`).join("")||'<span class="muted">No questions yet.</span>'}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+document.getElementById("ask").onclick=ask;document.getElementById("q").addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Enter")ask()});
+document.getElementById("mic").onclick=()=>{let R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){alert("Voice input is not supported here.");return}let r=new R();r.lang=navigator.language||"en-US";r.onresult=e=>document.getElementById("q").value=e.results[0][0].transcript;r.start()};
+document.getElementById("photo").onclick=()=>alert("Photo attachment is not analyzed in this local-only build, so the Gremlin will not pretend it can see the image.");
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js?ver=final3").catch(()=>{});render();
 </script></body></html>
