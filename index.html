@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Daily Truth — a Bible-inspired daily encouragement app.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Daily Truth">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>Daily Truth</title>
+  <style>
+    :root{--bg:#0f172a;--card:#1e293b;--gold:#fcd34d;--accent:#f59e0b;--text:#f8fafc;--muted:#94a3b8;--blue:#93c5fd;--green:#10b981;--danger:#f87171}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{background:var(--bg)}
+    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#243657 0,#0f172a 52%);color:var(--text);min-height:100svh;padding:18px;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+    button,input,textarea{font:inherit}
+    button{touch-action:manipulation}
+    .app{max-width:560px;margin:auto}
+    header{text-align:center;padding:24px 8px 22px}
+    header h1{font-size:clamp(1.8rem,7vw,2.3rem);color:var(--gold);letter-spacing:-.03em}
+    header p{color:var(--muted);margin-top:6px}
+    .card{background:rgba(30,41,59,.94);border:1px solid rgba(252,211,77,.12);border-radius:22px;padding:24px;box-shadow:0 14px 45px rgba(0,0,0,.28);margin-bottom:18px}
+    .hidden{display:none!important}
+    .welcome{color:var(--gold);font-size:1.08rem;margin-bottom:18px}
+    label{display:block;color:#cbd5e1;font-size:.92rem;margin:0 0 7px}
+    input,textarea{width:100%;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.07);color:#fff;padding:13px 14px;margin-bottom:14px;outline:none}
+    input:focus,textarea:focus{border-color:var(--gold)}
+    textarea{resize:vertical;min-height:90px}
+    .primary{width:100%;border:0;border-radius:16px;padding:16px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(217,119,6,.25)}
+    .primary:active{transform:scale(.98)}
+    .primary.listening{animation:pulse 1.15s infinite}
+    @keyframes pulse{70%{box-shadow:0 0 0 18px rgba(245,158,11,0)}100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .secondary{border:1px solid rgba(252,211,77,.5);background:transparent;color:var(--gold);border-radius:12px;padding:11px;cursor:pointer}
+    .secondary:disabled{opacity:.45;cursor:not-allowed}
+    .greeting{color:var(--gold);font-size:1.08rem;margin-bottom:15px}
+    .status{text-align:center;color:var(--muted);min-height:24px;margin:13px 0 2px;font-size:.92rem}
+    .truth{display:none;margin-top:18px;background:rgba(252,211,77,.075);border-left:4px solid var(--gold);border-radius:14px;padding:21px}
+    .truth.show{display:block;animation:fade .35s ease}
+    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .truth h2{color:var(--gold);font-size:1.25rem;margin-bottom:13px}
+    .quote{font-style:italic;line-height:1.7;color:#e5e7eb;margin-bottom:14px}
+    .verse{background:rgba(255,255,255,.055);padding:14px;border-radius:10px;line-height:1.6;color:#dbe4ef;margin-bottom:14px}
+    .apply{line-height:1.65;color:var(--blue)}
+    .speak{margin-top:15px;background:var(--green);color:#fff;border:0;border-radius:10px;padding:10px 15px;cursor:pointer}
+    .footer{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.8rem;padding:8px}
+    .linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer}
+    .install{margin-top:12px}
+    .install.hidden{display:none}
+    .note{font-size:.82rem;color:var(--muted);line-height:1.5;margin-top:12px}
+    @media(max-width:380px){.card{padding:19px}.actions{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>🕊️ Daily Truth</h1>
+    <p>Bible-inspired daily encouragement</p>
+  </header>
+
+  <section id="intro" class="card hidden">
+    <div class="welcome">Welcome 👋</div>
+    <p class="note" style="margin:0 0 18px">Tell me your first name. The optional note stays on this device and is used only to personalize the message.</p>
+    <label for="name">First name</label>
+    <input id="name" autocomplete="given-name" maxlength="40" placeholder="Your first name">
+    <label for="about">Optional — what's on your heart?</label>
+    <textarea id="about" maxlength="500" placeholder="A little about you..."></textarea>
+    <button class="primary" id="begin">Let's Begin ✨</button>
+  </section>
+
+  <section id="main" class="hidden">
+    <div class="greeting" id="greeting"></div>
+
+    <div class="card">
+      <button class="primary" id="voice">🎙️ Give me a truth</button>
+      <div class="status" id="status">Tap the button. On supported browsers you can speak your request.</div>
+      <div class="actions">
+        <button class="secondary" id="next">✨ Next truth</button>
+        <button class="secondary" id="install" disabled>📲 Install app</button>
+      </div>
+      <p class="note" id="voiceNote"></p>
+    </div>
+
+    <article id="truth" class="truth" aria-live="polite">
+      <h2 id="title"></h2>
+      <div class="quote" id="quote"></div>
+      <div class="verse" id="verse"></div>
+      <div class="apply" id="apply"></div>
+      <button class="speak" id="speak">🔊 Hear it spoken</button>
+    </article>
+  </section>
+
+  <footer class="footer">
+    <button class="linkbtn" id="reset">Reset my details</button>
+    <span>Works offline after first load</span>
+  </footer>
+</main>
+
+<script>
+"use strict";
+
+const truths = [
+  {
+    title:"Faith Is Not Begging",
+    quote:"Faith is not persuading God to do something; it is responding to what He has promised.",
+    verse:"2 Corinthians 1:20 — “For all the promises of God find their Yes in Him.”",
+    apply:"You do not have to convince God to care. Bring your need honestly, receive His promise, and take the next faithful step."
+  },
+  {
+    title:"Your True Worth",
+    quote:"Your worth is not something you have to earn.",
+    verse:"1 Peter 2:9 — “You are a chosen people, a royal priesthood, a holy nation, God's special possession.”",
+    apply:"What you accomplish does not determine your value. Let your identity be grounded in being loved and known by God."
+  },
+  {
+    title:"The New Creation",
+    quote:"In Christ, your past does not have the final word.",
+    verse:"2 Corinthians 5:17 — “If anyone is in Christ, the new creation has come.”",
+    apply:"You can move forward without pretending the past never happened. Receive fresh mercy, fresh purpose, and a new beginning today."
+  },
+  {
+    title:"Full Redemption",
+    quote:"Redemption speaks of God bringing restoration and hope into places that have been broken.",
+    verse:"Colossians 1:13 — “He has rescued us from the dominion of darkness and brought us into the kingdom of the Son He loves.”",
+    apply:"Whatever feels damaged or lost, you can place it before God. Restoration may take time, but hope is still available today."
+  },
+  {
+    title:"Prayer Is Receiving",
+    quote:"Prayer is an invitation to bring your heart honestly before God and trust His response.",
+    verse:"Isaiah 65:24 — “Before they call I will answer; while they are still speaking I will hear.”",
+    apply:"You do not need perfect words. Speak plainly, listen quietly, and trust that your prayer has been heard."
+  },
+  {
+    title:"Seated Together",
+    quote:"Your relationship with God is not something you must earn by constant striving.",
+    verse:"Ephesians 2:6 — “God raised us up with Christ and seated us with Him in the heavenly realms in Christ Jesus.”",
+    apply:"You can begin today from a place of belonging rather than striving. Pause, breathe, and remember that you are not alone."
+  },
+  {
+    title:"His Riches, Not Yours",
+    quote:"Your present resources do not define the limits of God's provision.",
+    verse:"Philippians 4:19 — “My God will meet all your needs according to the riches of His glory in Christ Jesus.”",
+    apply:"Name the need without letting fear become the story. Ask for wisdom, use what is in your hands, and trust God with what you cannot control."
+  },
+  {
+    title:"Not Your Timing — His",
+    quote:"Waiting can be a season of faith rather than a sign that you have been forgotten.",
+    verse:"Habakkuk 2:3 — “Though it linger, wait for it; it will certainly come and will not delay.”",
+    apply:"When an answer feels slow, focus on what you can faithfully do today. Waiting does not have to mean standing still."
+  },
+  {
+    title:"You Are Held",
+    quote:"You do not have to carry every burden by yourself.",
+    verse:"1 Peter 5:7 — “Cast all your anxiety on Him because He cares for you.”",
+    apply:"Name the burden. Hand it to God. Then take one small practical step rather than trying to solve the whole future at once."
+  },
+  {
+    title:"The Word Within You",
+    quote:"Faith grows as you hear, remember, and live out God's Word.",
+    verse:"Romans 10:17 — “Faith comes by hearing, and hearing by the word of God.”",
+    apply:"Give yourself a few quiet minutes with Scripture today. Let one truth stay with you instead of trying to absorb everything at once."
+  }
+];
+
+const $ = id => document.getElementById(id);
+let name = localStorage.getItem("dt_name") || "";
+let about = localStorage.getItem("dt_about") || "";
+let used = safeJson(localStorage.getItem("dt_used"), []);
+let deferredInstall = null;
+
+function safeJson(value, fallback) {
+  try { const x = JSON.parse(value); return Array.isArray(x) ? x : fallback; }
+  catch { return fallback; }
+}
+
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+
+function init() {
+  if (name) showMain();
+  else $("intro").classList.remove("hidden");
+
+  $("begin").addEventListener("click", saveIntro);
+  $("next").addEventListener("click", pickTruth);
+  $("voice").addEventListener("click", startListening);
+  $("speak").addEventListener("click", speakTruth);
+  $("reset").addEventListener("click", resetUser);
+  $("install").addEventListener("click", installApp);
+
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Recognition) {
+    $("voiceNote").textContent = "Voice recognition is not available in this browser. The button will still give you a truth.";
+  } else {
+    $("voiceNote").textContent = "Voice recognition is supported here. If the browser asks for microphone permission, allow it to use voice requests.";
+  }
+
+  window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    deferredInstall = e;
+    $("install").disabled = false;
+  });
+
+  window.addEventListener("appinstalled", () => {
+    deferredInstall = null;
+    $("install").disabled = true;
+    setStatus("✓ Daily Truth was installed.");
+  });
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
+}
+
+function saveIntro() {
+  name = $("name").value.trim() || "Friend";
+  about = $("about").value.trim();
+  localStorage.setItem("dt_name", name);
+  localStorage.setItem("dt_about", about);
+  showMain();
+}
+
+function showMain() {
+  $("intro").classList.add("hidden");
+  $("main").classList.remove("hidden");
+  $("greeting").textContent = `Welcome, ${name}! ✨ Ready for your truth?`;
+}
+
+function setStatus(text) { $("status").textContent = text; }
+
+function pickTruth() {
+  if (used.length >= truths.length) used = [];
+  const available = truths.map((_, i) => i).filter(i => !used.includes(i));
+  const idx = available[Math.floor(Math.random() * available.length)];
+  used.push(idx);
+  localStorage.setItem("dt_used", JSON.stringify(used));
+  showTruth(truths[idx]);
+}
+
+function showTruth(t) {
+  $("title").textContent = t.title;
+  $("quote").textContent = `“${t.quote}”`;
+  $("verse").textContent = t.verse;
+  $("apply").innerHTML = `<strong>For you, ${escapeHTML(name)}:</strong><br><br>${escapeHTML(t.apply)}`;
+  $("truth").classList.add("show");
+  setStatus("✨ Here is your truth.");
+  $("truth").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function startListening() {
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Recognition) {
+    pickTruth();
+    return;
+  }
+  const btn = $("voice");
+  if (btn.dataset.listening === "1") return;
+  const recognition = new Recognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = navigator.language || "en-US";
+  btn.dataset.listening = "1";
+  btn.classList.add("listening");
+  setStatus("🎙️ Listening… say “Give me a truth” or “Next truth”.");
+
+  recognition.onresult = e => {
+    const text = e.results?.[0]?.[0]?.transcript?.toLowerCase() || "";
+    if (/truth|next|word|give me/.test(text)) {
+      setStatus(`Heard: “${text}”`);
+      setTimeout(pickTruth, 250);
+    } else {
+      setStatus(`Heard: “${text}” — giving you a truth anyway.`);
+      setTimeout(pickTruth, 500);
+    }
+  };
+  recognition.onerror = () => {
+    setStatus("Microphone/voice recognition did not start. Tap again or use Next truth.");
+  };
+  recognition.onend = () => {
+    btn.dataset.listening = "0";
+    btn.classList.remove("listening");
+  };
+  try { recognition.start(); }
+  catch { btn.dataset.listening = "0"; btn.classList.remove("listening"); pickTruth(); }
+}
+
+function speakTruth() {
+  if (!("speechSynthesis" in window)) {
+    setStatus("Spoken playback is not available in this browser.");
+    return;
+  }
+  speechSynthesis.cancel();
+  const text = $("truth").innerText;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.9;
+  utter.pitch = 1;
+  speechSynthesis.speak(utter);
+}
+
+async function installApp() {
+  if (!deferredInstall) {
+    setStatus("Use your browser's Add to Home Screen option if available.");
+    return;
+  }
+  deferredInstall.prompt();
+  await deferredInstall.userChoice;
+  deferredInstall = null;
+  $("install").disabled = true;
+}
+
+function resetUser() {
+  if (!confirm("Reset your saved name, note, and truth history on this device?")) return;
+  localStorage.removeItem("dt_name");
+  localStorage.removeItem("dt_about");
+  localStorage.removeItem("dt_used");
+  name = about = "";
+  used = [];
+  $("main").classList.add("hidden");
+  $("truth").classList.remove("show");
+  $("name").value = "";
+  $("about").value = "";
+  $("intro").classList.remove("hidden");
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
